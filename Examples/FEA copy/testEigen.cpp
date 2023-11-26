@@ -7,6 +7,11 @@
 typedef Eigen::MatrixXd DD;
 
 extern "C" {
+    struct MatrixInfo {
+        void* dataPtr;
+        DD* matPtr;
+    };
+
     void* createMatrix(int sizeSq) {
         std::vector<double> holder;
         holder.reserve(sizeSq*sizeSq);
@@ -15,9 +20,38 @@ extern "C" {
         }
         Eigen::Map<DD> mat(holder.data(), sizeSq, sizeSq);
         DD* matrix = new DD(mat);
-        return matrix;
+
+        MatrixInfo info;
+        info.matPtr = matrix;
+        info.dataPtr = matrix->data();
+        std::cout<<"making matrix"<<std::endl;
+        return &info;
+    }
+
+    void* getDataPtr(MatrixInfo* matrixInfo) {
+        return matrixInfo->dataPtr;
+    }
+
+    void* getMatrixPtr(MatrixInfo* matrixInfo) {
+        return matrixInfo->matPtr;
+    }
+
+    void freeStruct(void* matrixInfo) {
+        delete static_cast<MatrixInfo*>(matrixInfo);
+    }
+
+    void freeMatrix(void* matrixPtr) {
+        delete static_cast<DD*>(matrixPtr);
     }
 }
+
+// int main(int argc, char* argv[]) {
+//     auto mat = static_cast<DD*>(createMatrix(std::stoi(argv[1])));
+//     auto matreal = *mat;
+//     std::cout<<matreal<<std::endl;
+
+
+// }
 
 // int main() {
 //     // Basic linear solve

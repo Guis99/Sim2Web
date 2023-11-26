@@ -6,6 +6,7 @@ import { handleInput, handleButtonClick, setEmscriptenModule } from './click.js'
 // Set the Emscripten module when it is ready
 Module.onRuntimeInitialized = function () {
     setEmscriptenModule(Module);
+    console.log(Module)
 };
 
 document.getElementById('submitButton').addEventListener('click', function() {
