@@ -2,14 +2,19 @@
   "name": "fea",
   "version": "1.0.0",
   "description": "Porting C++ Finite Element lib to web",
-  "main": "index.js",
+  "main": "src/script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fetch": "^1.1.0",
+    "http-server": "^14.1.1",
     "plotly.js": "^2.27.1",
-    "react-plotly.js": "^2.6.0"
-  }
+    "react": "^18.2.0",
+    "react-plotly.js": "^2.6.0",
+    "require": "^2.4.20"
+  },
+  "type": "module"
 }
