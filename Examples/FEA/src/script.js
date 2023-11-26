@@ -1,5 +1,5 @@
-// import {Plotly} from 'plotly.js';
-// import {React} from 'react'
+// import * as Plotly from '../node_modules/plotly.js';
+// import {React} from './react'
 var size = 100, x = new Array(size), y = new Array(size), z = new Array(size), i, j;
 
 for(var i = 0; i < size; i++) {
@@ -79,9 +79,9 @@ Promise.all([
     }
 
     for (var i = 0; i < size; i++) {
-            xGrid[i] = new Array(size).fill(0).map(function(_, j) {
-                return x[j] || 0; // Use x values for each column
-            });
+        xGrid[i] = new Array(size).fill(0).map(function(_, j) {
+            return x[j] || 0; // Use x values for each column
+        });
     }
 
     var zGrid = new Array(size).fill(0).map(function() {
