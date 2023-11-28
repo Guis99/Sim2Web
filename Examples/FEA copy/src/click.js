@@ -64,11 +64,74 @@ function sendStringArray(strings, ints) {
         meshOffset += 4; // Move to the next int
     });
 
-    Module._captureArgs(stringDataPtr, stringLengthsPtr, strings.length, meshDataPtr);
+    const rows = ints[0] * ints[2] + 1;
+    const cols = ints[1] * ints[3] + 1;
+    const solutionPtr = Module._captureArgs(stringDataPtr, stringLengthsPtr, strings.length, meshDataPtr);
+
+    const xGridPtr = Module._getxGrid(solutionPtr);
+    const yGridPtr = Module._getyGrid(solutionPtr);
+    const zValuePtr = Module._getSoln(solutionPtr);
+
+    const xDataPtr = Module._getMatrixPtr(xGridPtr);
+    const yDataPtr = Module._getMatrixPtr(yGridPtr);
+    const solnDataPtr = Module._getMatrixPtr(zValuePtr);
+
+    const x = Module.HEAPF64.subarray(xDataPtr >> 3, (xDataPtr >> 3) + rows);
+    const y = Module.HEAPF64.subarray(yDataPtr >> 3, (yDataPtr >> 3) + cols);
+    var z = Module.HEAPF64.subarray(solnDataPtr >> 3, (solnDataPtr >> 3) + rows * cols);
+
+    console.log('x',x);
+    console.log('y',y);
+    console.log('z',z);
+
+    var xVals = new Array(cols);
+    var yVals = new Array(cols);
+    var zVals = new Array(cols);
+
+    for (var i = 0; i < cols; i++) {
+        yVals[i] = new Array(rows).fill(y[i] || 0); // Filling with the last value of y
+    }
+
+    for (var i = 0; i < cols; i++) {
+        xVals[i] = new Array(rows).fill(0).map(function(_, j) {
+            return x[j] || 0; // Use x values for each column
+        });
+    }
+
+    // var zVals = new Array(cols).fill(0).map(function() {
+    //     return z.splice(0, rows);
+    // });
+    var zVals = new Array(cols).fill(0).map(function() {
+        // Create a Float64Array view of the first 'rows' elements in z
+        var subarray = new Float64Array(z.subarray(0, rows));
+    
+        // Update 'z' to exclude the elements that were just extracted
+        z = z.subarray(rows);
+    
+        return subarray;
+    });
+
+    console.log('x',xVals);
+    console.log('y',yVals);
+    console.log('z',zVals);
+
+    var data = [{
+        z: zVals,
+        x: xVals,
+        y: yVals,
+        type: 'surface'
+    }];
+
+    Plotly.newPlot('plotDiv', data);
 
     Module._free(stringDataPtr);
     Module._free(stringLengthsPtr);
     Module._free(meshDataPtr);
+
+    Module._freeStruct(solutionPtr);
+    Module._freeMatrix(xGridPtr);
+    Module._freeMatrix(yGridPtr);
+    Module._freeMatrix(zValuePtr);
 }
 
 // function sendString(str) {

@@ -66,6 +66,7 @@ Promise.all([
     var x = data[0]; // 1D array
     var y = data[1]; // 1D array
     var z = data[2]; // 2D array
+    console.log(z);
     console.log(x);
 
     // Expand x and y to create a 2D grid

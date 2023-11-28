@@ -47,29 +47,39 @@ extern "C" {
         double c = 1;
         double k = 1;
 
+        std::cout<<"Calling solver"<<std::endl;
         DD x = Solvers::MatrixAssembly::PoissonSolve(mesh, c, k, f, bcs);
+        std::cout<<"Solution retrieved"<<std::endl;
 
         std::vector<double> xGrid;
         std::vector<double> yGrid;
+        std::cout<<"debug1"<<std::endl;
         xGrid.reserve(widthX);
         yGrid.reserve(widthY);
+        std::cout<<"debug2"<<std::endl;
 
         for (int i=0; i<widthX; i++) {
             auto xcoords = mesh.posOfNodes(std::vector<int>{i});
             xGrid.push_back(xcoords[0][0]);
         } 
-
+        std::cout<<"debug3"<<std::endl;
         for (int i=0; i<widthY; i++) {
             int yIdx = i*widthX;
             auto ycoords = mesh.posOfNodes(std::vector<int>{yIdx});
             yGrid.push_back(ycoords[0][1]);
         } 
 
+        std::cout<<"debug4"<<std::endl;
+
         Eigen::Map<DD> xOffsets(xGrid.data(), widthX, 1);
+        std::cout<<"debug5"<<std::endl;
         Eigen::Map<DD> yOffsets(yGrid.data(), widthY, 1);
 
+        std::cout<<"debug6"<<std::endl;
         DD* xPos = new DD(xOffsets);
         DD* yPos = new DD(yOffsets);
+
+        std::cout<<"debug7"<<std::endl;
 
         Solution soln;
         soln.solution = &x;
