@@ -12,7 +12,7 @@ extern "C" {
         DD *solution;
     };
 
-    Solution* SolveSystem(int nxElem, int nyElem, int xdeg, int ydeg, 
+    void* SolveSystem(int nxElem, int nyElem, int xdeg, int ydeg, 
                         std::string f, std::vector<std::string> bcs) {
 
 
@@ -80,49 +80,35 @@ extern "C" {
         DD* yPos = new DD(yOffsets);
 
         std::cout<<"debug7"<<std::endl;
+        std::vector<DD>* out = new std::vector<DD>({xOffsets, yOffsets, x});
 
-        Solution soln;
-        soln.solution = &x;
-        soln.xGrid = xPos;
-        soln.yGrid = yPos;
-
-        Solution* out = &soln;
-
+        // Solution soln;
+        // soln.solution = &x;
+        // std::cout<<&x<<std::endl;
+        // std::cout<<"debug8"<<std::endl;
+        // soln.xGrid = xPos;
+        // std::cout<<"debug9"<<std::endl;
+        // soln.yGrid = yPos;
+        // std::cout<<"debug10"<<std::endl;
+        // Solution* out = &soln;
+        // std::cout<<"debug11"<<std::endl;
         return out;
     }
 
-    void* getxGrid(Solution* matrixInfo) {
-        return matrixInfo->xGrid;
+    double* getMatrixPtr(std::vector<DD>* matVec, int i) {
+        return (*matVec)[i].data();
     }
 
-    void* getyGrid(Solution* matrixInfo) {
-        return matrixInfo->yGrid;
-    }
-
-    void* getSoln(Solution* matrixInfo) {
-        return matrixInfo->solution;
-    }
-
-    void* getMatrixPtr(DD* mat) {
-        return mat->data();
-    }
-
-    void freeStruct(void* SolutionPtr) {
-        delete static_cast<Solution*>(SolutionPtr);
-    }
-
-    void freeMatrix(void* matrixPtr) {
-        delete static_cast<DD*>(matrixPtr);
-    }
-
-    Solution* captureArgs(const char* stringsData, const int* stringLengths, int numStrings, const int* meshParams) {
+    void* captureArgs(const char* stringsData, const int* stringLengths, int numStrings, const int* meshParams) {
         // int total_size = 0;
         // for (int i=0; i<numStrings; i++) {
         //     total_size += *(stringLengths+i);
         // }
-        
+        std::cout<<"ca1"<<std::endl;
         int offset = 0;
+        std::cout<<"ca2"<<std::endl;
         std::vector<std::string> strs;
+        std::cout<<"ca3"<<std::endl;
         for (int i = 0; i < numStrings; ++i) {
             const char* currentString = stringsData + offset;
             int currentStringLength = stringLengths[i];
@@ -134,17 +120,24 @@ extern "C" {
             // Move to the next string in linear memory
             offset += currentStringLength; // +1 for null terminator
         }
+        std::cout<<"ca4"<<std::endl;
 
         int nxElem = meshParams[0];
+        std::cout<<"ca5"<<std::endl;
         int nyElem = meshParams[1];
+        std::cout<<"ca6"<<std::endl;
         int xdeg = meshParams[2];
+        std::cout<<"ca7"<<std::endl;
         int ydeg = meshParams[3];
-
+        std::cout<<"ca8"<<std::endl;
         std::string source = strs[0];
+        std::cout<<"ca9"<<std::endl;
         std::vector<std::string> bcs(strs.data() + 1, strs.data() + strs.size());
-
+        std::cout<<"ca10"<<std::endl;
         // Solution *out = new Solution;
+        std::cout<<"solved??"<<std::endl;
         auto out = SolveSystem(nxElem, nyElem, xdeg, ydeg, source, bcs);
+        std::cout<<"debug12"<<std::endl;
         return out;
     }
 }

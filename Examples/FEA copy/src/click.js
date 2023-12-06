@@ -30,11 +30,15 @@ export function setEmscriptenModule(module) {
 
 function sendStringArray(strings, ints) {
     const stringLengths = strings.map(str => str.length);
+    console.log(strings)
+    console.log(stringLengths);
 
     const utf8Encoder = new TextEncoder();
     const stringData = strings.map(str => utf8Encoder.encode(str));
+    console.log(stringData);
 
     const totalLength = stringData.reduce((acc, strBytes) => acc + strBytes.length, 0);
+    console.log(totalLength);
 
     const stringDataPtr = Module._malloc(totalLength);
     const stringLengthsPtr = Module._malloc(stringLengths.length * 4); // Assuming int is 4 bytes
@@ -63,18 +67,17 @@ function sendStringArray(strings, ints) {
         Module.HEAP32.set([intVal], (meshDataPtr + meshOffset) / 4) // Assuming int is 4 bytes
         meshOffset += 4; // Move to the next int
     });
+    console.log('preca1');
 
     const rows = ints[0] * ints[2] + 1;
+    console.log('preca2');
     const cols = ints[1] * ints[3] + 1;
+    console.log('preca3');
     const solutionPtr = Module._captureArgs(stringDataPtr, stringLengthsPtr, strings.length, meshDataPtr);
 
-    const xGridPtr = Module._getxGrid(solutionPtr);
-    const yGridPtr = Module._getyGrid(solutionPtr);
-    const zValuePtr = Module._getSoln(solutionPtr);
-
-    const xDataPtr = Module._getMatrixPtr(xGridPtr);
-    const yDataPtr = Module._getMatrixPtr(yGridPtr);
-    const solnDataPtr = Module._getMatrixPtr(zValuePtr);
+    const xDataPtr = Module._getMatrixPtr(solutionPtr, 0);
+    const yDataPtr = Module._getMatrixPtr(solutionPtr, 1);
+    const solnDataPtr = Module._getMatrixPtr(solutionPtr, 2);
 
     const x = Module.HEAPF64.subarray(xDataPtr >> 3, (xDataPtr >> 3) + rows);
     const y = Module.HEAPF64.subarray(yDataPtr >> 3, (yDataPtr >> 3) + cols);
@@ -124,14 +127,16 @@ function sendStringArray(strings, ints) {
 
     Plotly.newPlot('plotDiv', data);
 
-    Module._free(stringDataPtr);
-    Module._free(stringLengthsPtr);
-    Module._free(meshDataPtr);
+    console.log('debug13');
 
-    Module._freeStruct(solutionPtr);
-    Module._freeMatrix(xGridPtr);
-    Module._freeMatrix(yGridPtr);
-    Module._freeMatrix(zValuePtr);
+    Module._free(stringDataPtr);
+    console.log('debug14');
+    Module._free(stringLengthsPtr);
+    console.log('debug15');
+    Module._free(meshDataPtr);
+    console.log('debug16');
+    Module._free(solutionPtr);
+    console.log('debug17');
 }
 
 // function sendString(str) {
@@ -187,6 +192,11 @@ export function handleButtonClick() {
                     document.getElementById("ney").value,
                     document.getElementById("xdeg").value,
                     document.getElementById("ydeg").value];
+
+    inputValue = ["y^2/5","sin(3*pi*x/4)","0","sin(pi*x/4)","0"];
+    // meshInputs = [15,15,4,4];
+    meshInputs = [55,55,2,2];
+    // meshInputs = [1,1,20,20];
 
     sendStringArray(inputValue, meshInputs);
 }
